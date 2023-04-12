@@ -51,26 +51,29 @@ void display(void)
    //visualização dos eixos
    //exercício: faça um plano sob a chaleira
    glBegin(GL_LINES);
+        //eixo X
         glColor3f (1.0, 0.0, 0.0);
         glVertex3f(0.0, 0.0, 0.0);
         glVertex3f(1.0, 0.0, 0.0);
         
+        //eixo y
         glColor3f (0.0, 1.0, 0.0);
         glVertex3f(0.0, 0.0, 0.0);
         glVertex3f(0.0, 1.0, 0.0);
-      
+        //eixo z
         glColor3f (0.0, 0.0, 1.0);
         glVertex3f(0.0, 0.0, 0.0);
         glVertex3f(0.0, 0.0, 1.0);
-
+        // linha amarela
         glColor3f(1.0, 1.0, 0.0);
         glVertex3f(0.0,0.0,1.0);
         glVertex3f(1.0, 0.0, 1.0);
-
+        // linha azul claro
         glColor3f(0.0, 1.0, 1.0);
         glVertex3f(1.0, 0.0, 0.0);
         glVertex3f(1.0, 0.0, 1.0);
-
+         
+        //aqui começa o desenho das linhas verticais
         glColor3f(0.0, 0.0, 0.0);
         glVertex3f(0.1, 0.0, 0.0);
         glVertex3f(0.1, 0.0, 1.0);
