@@ -1,21 +1,34 @@
-//Por Beatriz Trinchão Andrade
-
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/freeglut.h>
 #include <math.h>
 #include <stdio.h>
+#include "grid.h"
 
 float posCameraX,posCameraY,posCameraZ;
 
 void init(void) 
 {
    glClearColor (1.0, 1.0, 1.0, 0.0);
+   glEnable(GL_DEPTH_TEST);
    //inicializa posição da câmera
    posCameraX = 0.3;
    posCameraY = 0.1;
    posCameraZ = 0;
 }
+
+static float zoomFactor = 1.0;
+
+void setProjectionMatrix(int width, int height)
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60.0, (GLfloat)width/(GLfloat)height, 0.1, 100.0);
+    glTranslatef(0.0, 0.0, -5.0*zoomFactor);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
 
 // Rotaciona a posição da camera em torno do eixo y
 // Exercício: use coordenadas polares para posicionar a câmera em uma esfera ao redor do objeto
@@ -30,213 +43,40 @@ void specialKeys(int key, int x, int y)
        case GLUT_KEY_RIGHT : 
             posCameraX =  posCameraX*cos(angulo) + posCameraZ*sin(angulo);
             posCameraZ = -posCameraX*sin(angulo) + posCameraZ*cos(angulo);                      
-            break;          
+            break;
+       case GLUT_KEY_UP:
+            posCameraX += posCameraX * 0.1;
+            posCameraZ += posCameraZ * 0.1;
+            break;
+       case GLUT_KEY_DOWN:
+            posCameraX -= posCameraX * 0.1;
+            posCameraZ -= posCameraZ * 0.1;
+            break;
+          
    }
    glutPostRedisplay();
 }
 
-void grid(){
+void normalKeys(unsigned char key, int x, int y){
+   switch (key)
+   {
+   case 's':
+      zoomFactor += 0.02;
+      setProjectionMatrix(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+      glutPostRedisplay();
+      break;
+   case 'w':
+      zoomFactor -= 0.02;
+      if(zoomFactor < 0.1){zoomFactor = 0.1;}
+      setProjectionMatrix(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+      glutPostRedisplay();
+      break;
+      
 
-   glBegin(GL_LINES);
-        //eixo X
-        glColor3f (1.0, 0.0, 0.0);
-        glVertex3f(-1.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 0.0);
-        
-        //eixo y
-        glColor3f (0.0, 1.0, 0.0);
-        glVertex3f(0.0, -1.0, 0.0);
-        glVertex3f(0.0, 1.0, 0.0);
-        //eixo z
-        glColor3f (0.0, 0.0, 1.0);
-        glVertex3f(0.0, 0.0, -1.0);
-        glVertex3f(0.0, 0.0, 1.0);
-        // linha amarela
-        glColor3f(1.0, 1.0, 0.0);
-        glVertex3f(0.0,0.0,1.0);
-        glVertex3f(1.0, 0.0, 1.0);
-        //continuacao de linha amarela
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(0.0,0.0,1.0);
-        glVertex3f(-1.0, 0.0, 1.0);
-
-        // linha azul claro
-        glColor3f(0.0, 1.0, 1.0);
-        glVertex3f(1.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 1.0);
-
-        //continuacao de linha azul clara
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, -1.0);
-         
-        //aqui começa o desenho das linhas verticais
-
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(-1.0, 0.0, 1.0);
-        glVertex3f(-1.0, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(-0.9, 0.0, 1.0);
-        glVertex3f(-0.9, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(-0.8, 0.0, 1.0);
-        glVertex3f(-0.8, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(-0.7, 0.0, 1.0);
-        glVertex3f(-0.7, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(-0.6, 0.0, 1.0);
-        glVertex3f(-0.6, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(-0.5, 0.0, 1.0);
-        glVertex3f(-0.5, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(-0.4, 0.0, 1.0);
-        glVertex3f(-0.4, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(-0.3, 0.0, 1.0);
-        glVertex3f(-0.3, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(-0.2, 0.0, 1.0);
-        glVertex3f(-0.2, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(-0.1, 0.0, 1.0);
-        glVertex3f(-0.1, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(0.1, 0.0, 1.0);
-        glVertex3f(0.1, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(0.2, 0.0, 1.0);
-        glVertex3f(0.2, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(0.3, 0.0, 1.0);
-        glVertex3f(0.3, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(0.4, 0.0, 1.0);
-        glVertex3f(0.4, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(0.5, 0.0, 1.0);
-        glVertex3f(0.5, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(0.6, 0.0, 1.0);
-        glVertex3f(0.6, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(0.7, 0.0, 1.0);
-        glVertex3f(0.7, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(0.8, 0.0, 1.0);
-        glVertex3f(0.8, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(0.9, 0.0, 1.0);
-        glVertex3f(0.9, 0.0, -1.0);
-        
-         //linhas horizontais
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, -1.0);
-        glVertex3f(-1.0, 0.0, -1.0);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, -0.9);
-        glVertex3f(-1.0, 0.0, -0.9);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, -0.8);
-        glVertex3f(-1.0, 0.0, -0.8);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, -0.7);
-        glVertex3f(-1.0, 0.0, -0.7);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, -0.6);
-        glVertex3f(-1.0, 0.0, -0.6);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, -0.5);
-        glVertex3f(-1.0, 0.0, -0.5);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, -0.4);
-        glVertex3f(-1.0, 0.0, -0.4);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, -0.3);
-        glVertex3f(-1.0, 0.0, -0.3);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, -0.2);
-        glVertex3f(-1.0, 0.0, -0.2);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, -0.1);
-        glVertex3f(-1.0, 0.0, -0.1);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 0.1);
-        glVertex3f(-1.0, 0.0, 0.1);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 0.2);
-        glVertex3f(-1.0, 0.0, 0.2);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 0.2);
-        glVertex3f(-1.0, 0.0, 0.2);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 0.2);
-        glVertex3f(-1.0, 0.0, 0.2);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 0.3);
-        glVertex3f(-1.0, 0.0, 0.3);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 0.4);
-        glVertex3f(-1.0, 0.0, 0.4);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 0.5);
-        glVertex3f(-1.0, 0.0, 0.5);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 0.6);
-        glVertex3f(-1.0, 0.0, 0.6);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 0.7);
-        glVertex3f(-1.0, 0.0, 0.7);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 0.8);
-        glVertex3f(-1.0, 0.0, 0.8);
-
-        glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(1.0, 0.0, 0.9);
-        glVertex3f(-1.0, 0.0, 0.9);
-
-    glEnd();
+   }
 }
+
+
            
 void display(void)
 {
@@ -268,9 +108,10 @@ void reshape(int w, int h)
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
    glOrtho(-1.0, 1.0, -1.0, 1.0, -2.0, 2.0);
-   //gluPerspective(50.0, 1, 0.5, 1000.0);
+   setProjectionMatrix(w, h);
 
    glMatrixMode(GL_MODELVIEW);
+   glutPostRedisplay();
    glLoadIdentity();
 }
 
@@ -287,6 +128,7 @@ int main(int argc, char** argv)
    glutDisplayFunc(display); 
    glutSpecialFunc(specialKeys);
    glutReshapeFunc(reshape);
+   glutKeyboardFunc(normalKeys);
    
    glutMainLoop();
    
