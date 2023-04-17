@@ -6,6 +6,7 @@
 #include <GL/freeglut.h>
 #include <math.h>
 #include <stdio.h>
+#include "heightmap.h"
 
 float posCameraX,posCameraY,posCameraZ,anguloCamera,anguloCameraVertical;
 
@@ -19,6 +20,7 @@ void init(void)
    posCameraZ = 0;
    anguloCamera  = 0;
    anguloCameraVertical = 0;
+   loadHeightMap("resources/heightmap.bmp");
 
 }
 
@@ -121,6 +123,7 @@ void display(void)
    gluLookAt(posCameraX, posCameraY, posCameraZ, centroX, centroY, centroZ, 0, 1, 0);
 
    grid();
+   renderHeightMap(0.09, 1.0);
    
    //troca de buffers, o flush é implícito aqui
    glutSwapBuffers();
