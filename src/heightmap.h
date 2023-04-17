@@ -10,6 +10,8 @@
 #include <math.h>
 #include <stdio.h>
 std::vector<std::vector<float>> heights;
+
+//Função que recebe o diretório da imagem .bmp
 void loadHeightMap(const char* name){
     SDL_Surface* img=SDL_LoadBMP(name);
     if(!img){
@@ -29,7 +31,7 @@ void loadHeightMap(const char* name){
     }
 
 }
-
+//Renderiza height map com base na largura a altura desejada
 void renderHeightMap(float size, float h){
     for(int i = 0; i < heights.size()-1; ++i){
         for(int j = 0; j < heights[0].size()-1; ++j){
