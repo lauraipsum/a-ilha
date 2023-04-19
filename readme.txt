@@ -5,4 +5,4 @@ $ ./configure
 $ make
 =================================================================
 Para compilar:
-g++ -o run main.cpp -lGL -lGLU -lglut -lSDL2
+$ g++ -o run main.cpp -lGL -lGLU -lglut -lSDL2
