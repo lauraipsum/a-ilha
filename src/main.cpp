@@ -7,19 +7,28 @@
 #include <math.h>
 #include <stdio.h>
 #include "heightmap.h"
+#include "texture.h"
+#include <GL/glxext.h>
 
 float posCameraX,posCameraY,posCameraZ,anguloCamera,anguloCameraVertical;
+//unsigned int tex;
 
 void init(void) 
 {
    glClearColor (1.0, 1.0, 1.0, 0.0);
-
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+   glMatrixMode(GL_MODELVIEW);
+   glEnable(GL_DEPTH_TEST);
+   glEnable(GL_TEXTURE_2D);
+   //tex = loadTexture("resources/sand-texture-hd.bmp");
    //inicializa posição da câmera
    posCameraX = 0.3;
    posCameraY = 0.1;
    posCameraZ = 0;
    anguloCamera  = 0;
    anguloCameraVertical = 0;
+
    loadHeightMap("resources/heightmap.bmp");
 
 }
@@ -123,7 +132,8 @@ void display(void)
    gluLookAt(posCameraX, posCameraY, posCameraZ, centroX, centroY, centroZ, 0, 1, 0);
 
    grid();
-   renderHeightMap(0.09, 1.0);
+   //glBindTexture(GL_TEXTURE_2D, tex);
+   renderHeightMap(0.08, 2.0);
    
    //troca de buffers, o flush é implícito aqui
    glutSwapBuffers();
