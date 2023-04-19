@@ -133,6 +133,9 @@ void display(void)
 
    grid();
    //glBindTexture(GL_TEXTURE_2D, tex);
+   glTranslatef(0.0, 0.0,0.0);
+   glTranslatef(-1.0, -0.099, -1.0);
+   glScalef(0.25, 0.25, 0.25);
    renderHeightMap(0.08, 2.0);
    
    //troca de buffers, o flush é implícito aqui
