@@ -34,12 +34,16 @@ void loadHeightMap(const char* name){
 //Renderiza height map com base na largura a altura desejada
 void renderHeightMap(float size, float h){
     for(int i = 0; i < heights.size()-1; ++i){
-        for(int j = 0; j < heights[0].size()-1; ++j){
+        for(int j = 0; j < heights[i].size()-1; ++j){
             glBegin(GL_TRIANGLES);
             glColor3f(heights[i][j], heights[i][j], heights[i][j]);
-            glVertex3f(i*size, heights[i][j]*h, j*size);
-            glVertex3f((i+1)*size, heights[i+1][j]*h, j*size);
-            glVertex3f((i+1) *size, heights[i+1][j+1]*h, size*(j+1));
+            glVertex3f(i*size, heights[i][j]*h, j*size); //v1
+            glVertex3f((i+1)*size, heights[i+1][j]*h, j*size); //v2
+            glVertex3f((i+1) *size, heights[i+1][j+1]*h, size*(j+1)); //v3
+            
+            glVertex3f((i) *size, heights[i][j+1]*h, size*(j+1)); //v4
+            glVertex3f(i*size, heights[i][j]*h, j*size); //v1
+            glVertex3f((i+1) *size, heights[i+1][j+1]*h, size*(j+1)); //v3
             glEnd();
         }
     }

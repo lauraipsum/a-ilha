@@ -1,4 +1,4 @@
-// g++ main.cpp -o main -lglut -lGLU -lGL
+// g++ main.cpp -o main -lglut -lGLU -lGL -lSDL2 
 // ./main
 
 #include <GL/gl.h>
@@ -10,8 +10,9 @@
 #include "texture.h"
 #include <GL/glxext.h>
 
+
 float posCameraX,posCameraY,posCameraZ,anguloCamera,anguloCameraVertical;
-//unsigned int tex;
+unsigned int tex;
 
 void init(void) 
 {
@@ -21,7 +22,7 @@ void init(void)
    glMatrixMode(GL_MODELVIEW);
    glEnable(GL_DEPTH_TEST);
    glEnable(GL_TEXTURE_2D);
-   //tex = loadTexture("resources/sand-texture-hd.bmp");
+   tex = loadTexture("resources/sand-texture-hd.bmp");
    //inicializa posição da câmera
    posCameraX = 0.3;
    posCameraY = 0.1;
@@ -37,21 +38,19 @@ void specialKeys(int key, int x, int y)
 {
     switch (key) {
         case GLUT_KEY_LEFT :
-            posCameraX -= 0.1; // mover a câmera para a esquerda
+            anguloCamera -= 5.0;
             break;
-        case GLUT_KEY_RIGHT :
-            posCameraX += 0.1; // mover a câmera para a direita
-            break;
-        case GLUT_KEY_UP :
-            posCameraX += 0.1 * sin(anguloCamera * M_PI / 180.0); // mover a câmera para frente
-            posCameraZ -= 0.1 * cos(anguloCamera * M_PI / 180.0); // mover a câmera para frente
-            posCameraY += 0.1 * sin(anguloCameraVertical * M_PI / 180.0); // mover a câmera para cima
-            break;
-        case GLUT_KEY_DOWN :
-            posCameraX -= 0.1 * sin(anguloCamera * M_PI / 180.0); // mover a câmera para trás
-            posCameraZ += 0.1 * cos(anguloCamera * M_PI / 180.0); // mover a câmera para trás
-            posCameraY -= 0.1 * sin(anguloCameraVertical * M_PI / 180.0); // mover a câmera para baixo
 
+        case GLUT_KEY_RIGHT :
+            anguloCamera += 5.0;
+            break;
+
+        case GLUT_KEY_UP :
+            anguloCameraVertical += 5.0;
+            break;
+
+        case GLUT_KEY_DOWN :
+            anguloCameraVertical -= 5.0;
             break;
 
     }
@@ -59,21 +58,47 @@ void specialKeys(int key, int x, int y)
 }
 
 
+void mouseMovement(int x, int y)
+{
+    static int last_x = x;
+    static int last_y = y;
+
+    int delta_x = x - last_x;
+    int delta_y = y - last_y;
+
+    anguloCamera += delta_x;
+    anguloCameraVertical += delta_y;
+
+    last_x = x;
+    last_y = y;
+
+    glutPostRedisplay();
+}
+
+
+
 void regularKeys(unsigned char key, int x, int y)
 {
     switch (key) {
 
       case 'w':
-         anguloCameraVertical += 5.0;
+            posCameraX += 0.1 * sin(anguloCamera * M_PI / 180.0); // mover a câmera para frente
+            posCameraZ -= 0.1 * cos(anguloCamera * M_PI / 180.0); // mover a câmera para frente
+            posCameraY += 0.1 * sin(anguloCameraVertical * M_PI / 180.0); // mover a câmera para cima
          break;
+
       case 's':
-         anguloCameraVertical -= 5.0;
+            posCameraX -= 0.1 * sin(anguloCamera * M_PI / 180.0); // mover a câmera para trás
+            posCameraZ += 0.1 * cos(anguloCamera * M_PI / 180.0); // mover a câmera para trás
+            posCameraY -= 0.1 * sin(anguloCameraVertical * M_PI / 180.0); // mover a câmera para baixo
          break;
+
         case 'a':
-            anguloCamera -= 5.0;
+            posCameraX -= 0.1; // mover a câmera para a esquerda
             break;
+
         case 'd':
-            anguloCamera += 5.0;
+            posCameraX += 0.1;
             break;
 
     }
@@ -132,7 +157,7 @@ void display(void)
    gluLookAt(posCameraX, posCameraY, posCameraZ, centroX, centroY, centroZ, 0, 1, 0);
 
    grid();
-   //glBindTexture(GL_TEXTURE_2D, tex);
+   glBindTexture(GL_TEXTURE_2D, tex);
    glTranslatef(0.0, 0.0,0.0);
    glTranslatef(-1.0, -0.099, -1.0);
    glScalef(0.25, 0.25, 0.25);
@@ -170,6 +195,7 @@ int main(int argc, char** argv)
    glutDisplayFunc(display); 
 
    glutSpecialFunc(specialKeys);
+   glutMotionFunc(mouseMovement);
    glutKeyboardFunc(regularKeys); // registra a função regularKeys como callback para teclas normais
 
    glutReshapeFunc(reshape);
