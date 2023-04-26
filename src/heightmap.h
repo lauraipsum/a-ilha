@@ -9,6 +9,7 @@
 #include <GL/freeglut.h>
 #include <math.h>
 #include <stdio.h>
+
 std::vector<std::vector<float>> heights;
 
 //Função que recebe o diretório da imagem .bmp
@@ -31,6 +32,7 @@ void loadHeightMap(const char* name){
     }
 
 }
+
 //Renderiza height map com base na largura a altura desejada
 void renderHeightMap(float size, float h){
     for(int i = 0; i < heights.size()-1; ++i){
@@ -48,5 +50,33 @@ void renderHeightMap(float size, float h){
         }
     }
 }
+
+float getHeightFromMap(float x, float z)
+{
+    
+    // Encontra a célula do heightmap correspondente às coordenadas (x, z)
+    int i = (int)floor(x);
+    int j = (int)floor(z);
+
+    // Verifica se (x, z) está dentro dos limites do heightmap
+    if (i < 0 || i >= heights.size()-1 || j < 0 || j >= heights[0].size()-1) {
+        return 0.0;
+    }
+
+    // Calcula a altura interpolando os valores do heightmap
+    float h00 = heights[i][j];
+    float h01 = heights[i][j+1];
+    float h10 = heights[i+1][j];
+    float h11 = heights[i+1][j+1];
+
+    float fx = x - i;
+    float fz = z - j;
+
+    float h0 = h00 + fx*(h10 - h00);
+    float h1 = h01 + fx*(h11 - h01);
+
+    return (h0 + fz*(h1 - h0)) ;
+}
+
 
 #endif
