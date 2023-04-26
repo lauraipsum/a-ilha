@@ -29,12 +29,12 @@ void init(void)
    glEnable(GL_TEXTURE_2D);
 
    tex = loadTexture("resources/texturas/sand-texture-hd.bmp");
-   xceu = loadTexture("resources/texturas/cloudy/bluecloud_lf.bmp");
-   xxceu = loadTexture("resources/texturas/cloudy/bluecloud_rt.bmp");
-   yceu = loadTexture("resources/texturas/cloudy/bluecloud_dn.bmp");
-   yyceu = loadTexture("resources/texturas/cloudy/bluecloud_up.bmp");
-   zceu = loadTexture("resources/texturas/cloudy/bluecloud_bk.bmp");
-   zzceu = loadTexture("resources/texturas/cloudy/bluecloud_ft.bmp");
+   xceu = loadTexture("resources/bluecloud_lf.bmp");
+   xxceu = loadTexture("resources/bluecloud_rt.bmp");
+   yceu = loadTexture("resources/bluecloud_dn.bmp");
+   yyceu = loadTexture("resources/bluecloud_up.bmp");
+   zceu = loadTexture("resources/bluecloud_bk.bmp");
+   zzceu = loadTexture("resources/bluecloud_ft.bmp");
 
    //inicializa posição da câmera
    posCameraX = 1.0;
@@ -248,7 +248,7 @@ void ilha(void){
     //glDisable(GL_DEPTH_TEST);   //turn off depth texting
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, tex);
-        glTranslatef(-largura/2, 0.0, -comprimento/2);
+        glTranslatef(-largura/2, 0.3888, -comprimento/2);
         //glTranslatef((largura/2)(100-propIlha)/200, 0.0,(comprimento/2)(100-propIlha)/200);
         renderHeightMap(tamHmap*propIlha/100, 1);
     
