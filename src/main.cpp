@@ -1,6 +1,3 @@
-// g++ main.cpp -o main -lglut -lGLU -lGL -lSDL2 
-// ./main
-
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/freeglut.h>
@@ -11,8 +8,16 @@
 #include <GL/glxext.h>
 
 
-float posCameraX,posCameraY,posCameraZ,anguloCamera,anguloCameraVertical;
-unsigned int tex;
+float posCameraX,posCameraY,posCameraZ,anguloCamera,anguloCameraVertical, 
+        propIlha = 80, largIlha, compIlha, lagos;
+
+int largura = 10, altura = 12, comprimento = 10, terrestres1, terrestres2, plantas1, plantas2;
+
+unsigned int tex, xceu, xxceu, yceu, yyceu, zceu, zzceu;
+
+float   diagonalTotal = sqrt(pow(largura,2)+pow(comprimento,2)),
+        diagonalHmap = 100*sqrt(2),
+        tamHmap = ((diagonalTotal*100)/diagonalHmap)/100;
 
 void init(void) 
 {
@@ -22,15 +27,24 @@ void init(void)
    glMatrixMode(GL_MODELVIEW);
    glEnable(GL_DEPTH_TEST);
    glEnable(GL_TEXTURE_2D);
-   tex = loadTexture("resources/sand-texture-hd.bmp");
+
+   tex = loadTexture("resources/texturas/sand-texture-hd.bmp");
+   xceu = loadTexture("resources/texturas/cloudy/bluecloud_lf.bmp");
+   xxceu = loadTexture("resources/texturas/cloudy/bluecloud_rt.bmp");
+   yceu = loadTexture("resources/texturas/cloudy/bluecloud_dn.bmp");
+   yyceu = loadTexture("resources/texturas/cloudy/bluecloud_up.bmp");
+   zceu = loadTexture("resources/texturas/cloudy/bluecloud_bk.bmp");
+   zzceu = loadTexture("resources/texturas/cloudy/bluecloud_ft.bmp");
+
    //inicializa posição da câmera
-   posCameraX = 0.3;
-   posCameraY = 0.1;
+   posCameraX = 1.0;
+   posCameraY = 1.0;
    posCameraZ = 0;
    anguloCamera  = 0;
    anguloCameraVertical = 0;
 
-   loadHeightMap("resources/heightmap.bmp");
+   loadHeightMap("resources/hmap3.bmp");
+   glEnable(GL_DEPTH_TEST);
 
 }
 
@@ -75,8 +89,6 @@ void mouseMovement(int x, int y)
     glutPostRedisplay();
 }
 
-
-
 void regularKeys(unsigned char key, int x, int y)
 {
     switch (key) {
@@ -105,40 +117,181 @@ void regularKeys(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
+void skybox(void){
+    
+    bool b1 = glIsEnabled(GL_TEXTURE_2D); //new, we left the textures turned on, if it was turned on
+    glDisable(GL_LIGHTING); //turn off lighting, when making the skybox
+    //glDisable(GL_DEPTH_TEST);   //turn off depth texting
+    glEnable(GL_TEXTURE_2D);
+
+    glColor4f(1, 1, 1, 1);
+    glBindTexture(GL_TEXTURE_2D, yyceu);
+    glBegin(GL_QUADS); //top
+        glTexCoord2f(0,0); 
+        glVertex3f(largura/2 , 2*altura/3, -comprimento/2);
+        glTexCoord2f(1,0);
+        glVertex3f(-largura/2 , 2*altura/3, -comprimento/2);
+        glTexCoord2f(1,1);
+        glVertex3f(-largura/2 , 2*altura/3, comprimento/2);
+        glTexCoord2f(0,1);
+        glVertex3f(largura/2 , 2*altura/3, comprimento/2);  
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, yceu);
+    glBegin(GL_QUADS); //down
+        glTexCoord2f(0,0);
+        glVertex3f(largura/2 , -altura/3, comprimento/2);
+        glTexCoord2f(1,0);
+        glVertex3f(-largura/2 , -altura/3, comprimento/2);
+        glTexCoord2f(1,1);
+        glVertex3f(-largura/2 , -altura/3, -comprimento/2);
+        glTexCoord2f(0,1);
+        glVertex3f(largura/2 , -altura/3, -comprimento/2);
+    glEnd();
+    
+    glBindTexture(GL_TEXTURE_2D, zceu);
+    glBegin(GL_QUADS); //
+        glTexCoord2f(0,0);
+        glVertex3f(largura/2 , 2*altura/3, comprimento/2);
+        glTexCoord2f(1,0);
+        glVertex3f(-largura/2 , 2*altura/3, comprimento/2);
+        glTexCoord2f(1,1);
+        glVertex3f(-largura/2 , -altura/3, comprimento/2);
+        glTexCoord2f(0,1);
+        glVertex3f(largura/2 , -altura/3, comprimento/2);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, zzceu);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0,0);
+        glVertex3f(largura/2 , -altura/3, -comprimento/2);
+        glTexCoord2f(1,0);
+        glVertex3f(-largura/2 , -altura/3, -comprimento/2);
+        glTexCoord2f(1,1);
+        glVertex3f(-largura/2 , 2*altura/3, -comprimento/2);
+        glTexCoord2f(0,1);
+        glVertex3f(largura/2 , 2*altura/3, -comprimento/2);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, xxceu);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0,0);
+        glVertex3f(-largura/2 , 2*altura/3, comprimento/2);
+        glTexCoord2f(1,0);
+        glVertex3f(-largura/2 , 2*altura/3, -comprimento/2);
+        glTexCoord2f(1,1);
+        glVertex3f(-largura/2 , -altura/3, -comprimento/2);
+        glTexCoord2f(0,1);
+        glVertex3f(-largura/2 , -altura/3, comprimento/2);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, xceu);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0,0);
+        glVertex3f(largura/2 , 2*altura/3, -comprimento/2);
+        glTexCoord2f(1,0);
+        glVertex3f(largura/2 , 2*altura/3, comprimento/2);
+        glTexCoord2f(1,1);
+        glVertex3f(largura/2 , -altura/3, comprimento/2);
+        glTexCoord2f(0,1);
+        glVertex3f(largura/2 , -altura/3, -comprimento/2);
+    glEnd();
+    glEnable(GL_LIGHTING);  //turn everything back, which we turned on, and turn everything off, which we have turned on.
+    //glEnable(GL_DEPTH_TEST);
+    if(!b1)
+        glDisable(GL_TEXTURE_2D);
+}
+
+void oceano(void){
+    glDisable(GL_LIGHTING); //turn off lighting, when making the skybox
+    //glDisable(GL_DEPTH_TEST);   //turn off depth texting
+    glBegin(GL_QUADS);
+        glColor4f(0.3, 0.3, 1.0, 0.3);
+        glVertex3f(largura/2 , 1, -comprimento/2);
+        glVertex3f(-largura/2 , 1, -comprimento/2);
+        glVertex3f(-largura/2 , 1, comprimento/2);
+        glVertex3f(largura/2 , 1, comprimento/2);
+
+        glVertex3f(largura/2 , -altura/3, comprimento/2);
+        glVertex3f(-largura/2 , -altura/3, comprimento/2);
+        glVertex3f(-largura/2 , -altura/3, -comprimento/2);
+        glVertex3f(largura/2 , -altura/3, -comprimento/2);
+
+        glVertex3f(largura/2 , 1, comprimento/2);
+        glVertex3f(-largura/2 , 1, comprimento/2);
+        glVertex3f(-largura/2 , -altura/3, comprimento/2);
+        glVertex3f(largura/2 , -altura/3, comprimento/2);
+
+        glVertex3f(largura/2 , -altura/3, -comprimento/2);
+        glVertex3f(-largura/2 , -altura/3, -comprimento/2);
+        glVertex3f(-largura/2 , 1, -comprimento/2);
+        glVertex3f(largura/2 , 1, -comprimento/2);
+
+        glVertex3f(-largura/2 , 1, comprimento/2);
+        glVertex3f(-largura/2 , 1, -comprimento/2);
+        glVertex3f(-largura/2 , -altura/3, -comprimento/2);
+        glVertex3f(-largura/2 , -altura/3, comprimento/2);
+
+        glVertex3f(largura/2 , 1, -comprimento/2);
+        glVertex3f(largura/2 , 1, comprimento/2);
+        glVertex3f(largura/2 , -altura/3, comprimento/2);
+        glVertex3f(largura/2 , -altura/3, -comprimento/2);
+    glEnd();
+        
+    glEnable(GL_LIGHTING);  //turn everything back, which we turned on, and turn everything off, which we have turned on.
+    // glEnable(GL_DEPTH_TEST);
+}
+
+void ilha(void){
+    bool b1 = glIsEnabled(GL_TEXTURE_2D); //new, we left the textures turned on, if it was turned on
+    glDisable(GL_LIGHTING); //turn off lighting, when making the skybox
+    //glDisable(GL_DEPTH_TEST);   //turn off depth texting
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex);
+        glTranslatef(-largura/2, 0.0, -comprimento/2);
+        //glTranslatef((largura/2)(100-propIlha)/200, 0.0,(comprimento/2)(100-propIlha)/200);
+        renderHeightMap(tamHmap*propIlha/100, 1);
+    
+    glEnable(GL_LIGHTING);  //turn everything back, which we turned on, and turn everything off, which we have turned on.
+    // glEnable(GL_DEPTH_TEST);
+    if(!b1)
+        glDisable(GL_TEXTURE_2D);
+
+}
+
 void grid(){
 
    glBegin(GL_LINES);
-
       //eixo X
-   glColor3f (1.0, 0.0, 0.0);
-   glVertex3f(-1.0, 0.0, 0.0);
-   glVertex3f(1.0, 0.0, 0.0);
+   glColor3f (largura/2, 0.0, 0.0);
+   glVertex3f(-largura/2, 0.0, 0.0);
+   glVertex3f(largura/2, 0.0, 0.0);
 
        //eixo y
-    glColor3f (0.0, 1.0, 0.0);
-    glVertex3f(0.0, -1.0, 0.0);
-    glVertex3f(0.0, 1.0, 0.0);
+    glColor3f (0.0, altura/2, 0.0);
+    glVertex3f(0.0, -altura/2, 0.0);
+    glVertex3f(0.0, altura/2, 0.0);
     
       //eixo z
-    glColor3f (0.0, 0.0, 1.0);
-    glVertex3f(0.0, 0.0, -1.0);
-    glVertex3f(0.0, 0.0, 1.0);
+    glColor3f (0.0, 0.0, comprimento/2);
+    glVertex3f(0.0, 0.0, -comprimento/2);
+    glVertex3f(0.0, 0.0, comprimento/2);
 
       // loop para criar linhas horizontais
-    for(float i=-1.0; i<=1.0; i+=0.1) {
+    for(float i=-comprimento/2; i<=comprimento/2; i+=0.1) {
         if(i==0.0) continue; // pular a linha amarela
         if(i==-0.1 || i==0.1) glColor3f(0.0, 0.0, 0.0); // ajustar a cor para essas linhas
         else glColor3f(0.5, 0.5, 0.5); // todas as outras linhas são cinzas
-        glVertex3f(-1.0, 0.0, i);
-        glVertex3f(1.0, 0.0, i);
+        glVertex3f(-largura/2, 0.0, i);
+        glVertex3f(largura/2, 0.0, i);
     }
 
       // loop para criar linhas verticais
-    for(float i=-1.0; i<=1.0; i+=0.1) {
+    for(float i=-largura/2; i<=largura/2; i+=0.1) {
         if(i==0.0 || i==-1.0 || i==1.0) continue; // pular a linha amarela e as extremas
         glColor3f(0.0, 0.0, 0.0);
-        glVertex3f(i, 0.0, -1.0);
-        glVertex3f(i, 0.0, 1.0);
+        glVertex3f(i, 0.0, -comprimento/2);
+        glVertex3f(i, 0.0, comprimento/2);
     }
 
     glEnd();
@@ -156,12 +309,10 @@ void display(void)
    float centroZ = posCameraZ - cos(anguloCamera * M_PI / 180.0);
    gluLookAt(posCameraX, posCameraY, posCameraZ, centroX, centroY, centroZ, 0, 1, 0);
 
+   skybox();
    grid();
-   glBindTexture(GL_TEXTURE_2D, tex);
-   glTranslatef(0.0, 0.0,0.0);
-   glTranslatef(-1.0, -0.099, -1.0);
-   glScalef(0.25, 0.25, 0.25);
-   renderHeightMap(0.08, 2.0);
+   oceano();
+   ilha();
    
    //troca de buffers, o flush é implícito aqui
    glutSwapBuffers();
