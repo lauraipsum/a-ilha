@@ -49,7 +49,7 @@ void init(void)
    posCameraX = 1.0;
    posCameraY = 1.0;
    posCameraZ = 0;
-   anguloCamera  = 0;
+   anguloCamera = 0;
    anguloCameraVertical = 0;
 
 
@@ -330,6 +330,8 @@ void grid(){
     glEnd();
 }
 
+
+
 void terrestre1(float size, float h, float x, float y, float z){
     // Obtém a altura do solo na posição do teapot
     float height = getHeightFromMap(x, z);
@@ -386,26 +388,8 @@ void update(int value) {
     
 }
 
-
-
-void display(void)
-{
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    float centroX = posCameraX + sin(anguloCamera * M_PI / 180.0);
-    float centroY = posCameraY + sin(anguloCameraVertical * M_PI / 180.0);
-    float centroZ = posCameraZ - cos(anguloCamera * M_PI / 180.0);
-    gluLookAt(posCameraX, posCameraY, posCameraZ, centroX, centroY, centroZ, 0, 1, 0);
-
-    skybox();
-    //grid();
-    oceano();
-    ilha();
-
-// Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
+void genTerrestre1(){
+    // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
     int i = rand() % heights.size();
 
     // Gera um número aleatório de 0 a heights[i].size() - 1 para escolher uma coluna do heightmap
@@ -439,6 +423,8 @@ void display(void)
     }
 
     // Renderiza o teapot na nova posição
+    glDisable(GL_LIGHTING);
+
     glPushMatrix();
     glTranslatef(x, y, z);
     glRotatef(teapotRotation, 0.0f, 1.0f, 0.0f); // Adiciona uma rotação em torno do eixo y
@@ -447,6 +433,28 @@ void display(void)
     glColor3f(1,0,0);
     glutSolidTeapot(1.0);
     glPopMatrix();
+    glEnable(GL_LIGHTING); 
+
+}
+
+void display(void)
+{
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDepthFunc(GL_ALWAYS);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    float centroX = posCameraX + sin(anguloCamera * M_PI / 180.0);
+    float centroY = posCameraY + sin(anguloCameraVertical * M_PI / 180.0);
+    float centroZ = posCameraZ - cos(anguloCamera * M_PI / 180.0);
+    gluLookAt(posCameraX, posCameraY, posCameraZ, centroX, centroY, centroZ, 0, 1, 0);
+
+    skybox();
+    //grid();
+    oceano();
+    ilha();
+    genTerrestre1();
 
     //troca de buffers, o flush é implícito aqui
     glutSwapBuffers();
