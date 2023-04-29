@@ -43,7 +43,6 @@ void init(void)
     yyceu = loadTexture("resources/bluecloud_up.bmp");
     zceu = loadTexture("resources/bluecloud_bk.bmp");
     zzceu = loadTexture("resources/bluecloud_ft.bmp");
-    mar = loadTexture("resources/caust_001.bmp");
 
    //inicializa posição da câmera
    posCameraX = 1.0;
