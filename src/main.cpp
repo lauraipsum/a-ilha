@@ -1,6 +1,3 @@
-// g++ main.cpp -o main -lglut -lGLU -lGL -lSDL2 
-// ./main
-
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/freeglut.h>
@@ -16,7 +13,7 @@
 
 float posCameraX,posCameraY,posCameraZ,anguloCamera,anguloCameraVertical,propIlha = 80, largIlha, compIlha, lagos;
 int largura = 10, altura = 12, comprimento = 10, terrestres1, terrestres2, plantas1, plantas2;
-unsigned int tex, xceu, xxceu, yceu, yyceu, zceu, zzceu;
+unsigned int tex, xceu, xxceu, yceu, yyceu, zceu, zzceu, mar;
 
 
 float   diagonalTotal = sqrt(pow(largura,2)+pow(comprimento,2)),
@@ -46,6 +43,7 @@ void init(void)
     yyceu = loadTexture("resources/bluecloud_up.bmp");
     zceu = loadTexture("resources/bluecloud_bk.bmp");
     zzceu = loadTexture("resources/bluecloud_ft.bmp");
+    mar = loadTexture("resources/caust_001.bmp");
 
    //inicializa posição da câmera
    posCameraX = 1.0;
@@ -55,7 +53,7 @@ void init(void)
    anguloCameraVertical = 0;
 
 
-    loadHeightMap("resources/hmap3.bmp");
+    loadHeightMap("resources/Untitled.bmp");
     glEnable(GL_DEPTH_TEST);
 
 }
@@ -140,74 +138,74 @@ void skybox(void){
     glColor4f(1, 1, 1, 1);
     glBindTexture(GL_TEXTURE_2D, yyceu);
     glBegin(GL_QUADS); //top
-        glTexCoord2f(0,0); 
-        glVertex3f(largura/2 , 2*altura/3, -comprimento/2);
+        glTexCoord2f(1,1); 
+        glVertex3f(largura/2 , altura/2, -comprimento/2);
         glTexCoord2f(1,0);
-        glVertex3f(-largura/2 , 2*altura/3, -comprimento/2);
-        glTexCoord2f(1,1);
-        glVertex3f(-largura/2 , 2*altura/3, comprimento/2);
+        glVertex3f(-largura/2 , altura/2, -comprimento/2);
+        glTexCoord2f(0,0);
+        glVertex3f(-largura/2 , altura/2, comprimento/2);
         glTexCoord2f(0,1);
-        glVertex3f(largura/2 , 2*altura/3, comprimento/2);  
+        glVertex3f(largura/2 , altura/2, comprimento/2);  
     glEnd();
 
     glBindTexture(GL_TEXTURE_2D, yceu);
     glBegin(GL_QUADS); //down
-        glTexCoord2f(0,0);
-        glVertex3f(largura/2 , -altura/3, comprimento/2);
-        glTexCoord2f(1,0);
-        glVertex3f(-largura/2 , -altura/3, comprimento/2);
         glTexCoord2f(1,1);
-        glVertex3f(-largura/2 , -altura/3, -comprimento/2);
+        glVertex3f(largura/2 , -altura/2, comprimento/2);
         glTexCoord2f(0,1);
-        glVertex3f(largura/2 , -altura/3, -comprimento/2);
+        glVertex3f(-largura/2 , -altura/2, comprimento/2);
+        glTexCoord2f(0,0);
+        glVertex3f(-largura/2 , -altura/2, -comprimento/2);
+        glTexCoord2f(1,0);
+        glVertex3f(largura/2 , -altura/2, -comprimento/2);
     glEnd();
     
     glBindTexture(GL_TEXTURE_2D, zceu);
     glBegin(GL_QUADS); //
-        glTexCoord2f(0,0);
-        glVertex3f(largura/2 , 2*altura/3, comprimento/2);
-        glTexCoord2f(1,0);
-        glVertex3f(-largura/2 , 2*altura/3, comprimento/2);
         glTexCoord2f(1,1);
-        glVertex3f(-largura/2 , -altura/3, comprimento/2);
+        glVertex3f(largura/2 , altura/2, comprimento/2);
         glTexCoord2f(0,1);
-        glVertex3f(largura/2 , -altura/3, comprimento/2);
+        glVertex3f(-largura/2 , altura/2, comprimento/2);
+        glTexCoord2f(0,0);
+        glVertex3f(-largura/2 , -altura/2, comprimento/2);
+        glTexCoord2f(1,0);
+        glVertex3f(largura/2 , -altura/2, comprimento/2);
     glEnd();
 
     glBindTexture(GL_TEXTURE_2D, zzceu);
     glBegin(GL_QUADS);
         glTexCoord2f(0,0);
-        glVertex3f(largura/2 , -altura/3, -comprimento/2);
+        glVertex3f(largura/2 , -altura/2, -comprimento/2);
         glTexCoord2f(1,0);
-        glVertex3f(-largura/2 , -altura/3, -comprimento/2);
+        glVertex3f(-largura/2 , -altura/2, -comprimento/2);
         glTexCoord2f(1,1);
-        glVertex3f(-largura/2 , 2*altura/3, -comprimento/2);
+        glVertex3f(-largura/2 , altura/2, -comprimento/2);
         glTexCoord2f(0,1);
-        glVertex3f(largura/2 , 2*altura/3, -comprimento/2);
-    glEnd();
-
-    glBindTexture(GL_TEXTURE_2D, xxceu);
-    glBegin(GL_QUADS);
-        glTexCoord2f(0,0);
-        glVertex3f(-largura/2 , 2*altura/3, comprimento/2);
-        glTexCoord2f(1,0);
-        glVertex3f(-largura/2 , 2*altura/3, -comprimento/2);
-        glTexCoord2f(1,1);
-        glVertex3f(-largura/2 , -altura/3, -comprimento/2);
-        glTexCoord2f(0,1);
-        glVertex3f(-largura/2 , -altura/3, comprimento/2);
+        glVertex3f(largura/2 , altura/2, -comprimento/2);
     glEnd();
 
     glBindTexture(GL_TEXTURE_2D, xceu);
     glBegin(GL_QUADS);
-        glTexCoord2f(0,0);
-        glVertex3f(largura/2 , 2*altura/3, -comprimento/2);
-        glTexCoord2f(1,0);
-        glVertex3f(largura/2 , 2*altura/3, comprimento/2);
         glTexCoord2f(1,1);
-        glVertex3f(largura/2 , -altura/3, comprimento/2);
+        glVertex3f(-largura/2 , altura/2, comprimento/2);
         glTexCoord2f(0,1);
-        glVertex3f(largura/2 , -altura/3, -comprimento/2);
+        glVertex3f(-largura/2 , altura/2, -comprimento/2);
+        glTexCoord2f(0,0);
+        glVertex3f(-largura/2 , -altura/2, -comprimento/2);
+        glTexCoord2f(1,0);
+        glVertex3f(-largura/2 , -altura/2, comprimento/2);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, xxceu);
+    glBegin(GL_QUADS);
+        glTexCoord2f(1,1);
+        glVertex3f(largura/2 , altura/2, -comprimento/2);
+        glTexCoord2f(0,1);
+        glVertex3f(largura/2 , altura/2, comprimento/2);
+        glTexCoord2f(0,0);
+        glVertex3f(largura/2 , -altura/2, comprimento/2);
+        glTexCoord2f(1,0);
+        glVertex3f(largura/2 , -altura/2, -comprimento/2);
     glEnd();
     glEnable(GL_LIGHTING);  //turn everything back, which we turned on, and turn everything off, which we have turned on.
     //glEnable(GL_DEPTH_TEST);
@@ -217,51 +215,78 @@ void skybox(void){
 
 void oceano(void){
     glDisable(GL_LIGHTING); //turn off lighting, when making the skybox
+    //glDisable(GL_DEPTH_TEST);   //turn off depth texting
+    glDepthMask(GL_FALSE);
+
+    glColor4f(0.3, 0.3, 1, 1);
+    glBindTexture(GL_TEXTURE_2D, tex);
     glBegin(GL_QUADS);
-        glColor4f(0.3, 0.3, 1.0, 0.3);
-        glVertex3f(largura/2 , 1, -comprimento/2);
-        glVertex3f(-largura/2 , 1, -comprimento/2);
-        glVertex3f(-largura/2 , 1, comprimento/2);
-        glVertex3f(largura/2 , 1, comprimento/2);
-
-        glVertex3f(largura/2 , -altura/3, comprimento/2);
-        glVertex3f(-largura/2 , -altura/3, comprimento/2);
-        glVertex3f(-largura/2 , -altura/3, -comprimento/2);
-        glVertex3f(largura/2 , -altura/3, -comprimento/2);
-
-        glVertex3f(largura/2 , 1, comprimento/2);
-        glVertex3f(-largura/2 , 1, comprimento/2);
-        glVertex3f(-largura/2 , -altura/3, comprimento/2);
-        glVertex3f(largura/2 , -altura/3, comprimento/2);
-
-        glVertex3f(largura/2 , -altura/3, -comprimento/2);
-        glVertex3f(-largura/2 , -altura/3, -comprimento/2);
-        glVertex3f(-largura/2 , 1, -comprimento/2);
-        glVertex3f(largura/2 , 1, -comprimento/2);
-
-        glVertex3f(-largura/2 , 1, comprimento/2);
-        glVertex3f(-largura/2 , 1, -comprimento/2);
-        glVertex3f(-largura/2 , -altura/3, -comprimento/2);
-        glVertex3f(-largura/2 , -altura/3, comprimento/2);
-
-        glVertex3f(largura/2 , 1, -comprimento/2);
-        glVertex3f(largura/2 , 1, comprimento/2);
-        glVertex3f(largura/2 , -altura/3, comprimento/2);
-        glVertex3f(largura/2 , -altura/3, -comprimento/2);
+        glTexCoord2f(1,1);        
+        glVertex3f(largura/2 , 0, -comprimento/2);
+        glTexCoord2f(0,1);        
+        glVertex3f(-largura/2 , 0, -comprimento/2);
+        glTexCoord2f(0,0);        
+        glVertex3f(-largura/2 , 0, comprimento/2);
+        glTexCoord2f(1,0);        
+        glVertex3f(largura/2 , 0, comprimento/2);
     glEnd();
-        
+    glDepthMask(GL_TRUE);
+
+
+    glColor4f(0, 0, 0.7, 1);
+    glBegin(GL_QUADS); //
+        glVertex3f(largura/2 , 0, comprimento/2);
+        glVertex3f(-largura/2 , 0, comprimento/2);
+        glVertex3f(-largura/2 , -altura/2, comprimento/2);
+        glVertex3f(largura/2 , -altura/2, comprimento/2);
+    glEnd();
+
+    glBegin(GL_QUADS);
+        glVertex3f(largura/2 , -altura/2, -comprimento/2);
+        glVertex3f(-largura/2 , -altura/2, -comprimento/2);
+        glVertex3f(-largura/2 , 0, -comprimento/2);
+        glVertex3f(largura/2 , 0, -comprimento/2);
+    glEnd();
+
+    glBegin(GL_QUADS);
+        glVertex3f(-largura/2 , 0, comprimento/2);
+        glVertex3f(-largura/2 , 0, -comprimento/2);
+        glVertex3f(-largura/2 , -altura/2, -comprimento/2);
+        glVertex3f(-largura/2 , -altura/2, comprimento/2);
+    glEnd();
+
+    glBegin(GL_QUADS);
+        glVertex3f(largura/2 , 0, -comprimento/2);
+        glVertex3f(largura/2 , 0, comprimento/2);
+        glVertex3f(largura/2 , -altura/2, comprimento/2);
+        glVertex3f(largura/2 , -altura/2, -comprimento/2);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glColor4f(0, 0, 0.7, 1);
+    glBegin(GL_QUADS);
+        glTexCoord2f(1,1);        
+        glVertex3f(largura/2 , -(altura/2) + 0.5, -comprimento/2);
+        glTexCoord2f(0,1);
+        glVertex3f(-largura/2 , -(altura/2) + 0.5, -comprimento/2);
+        glTexCoord2f(0,0);
+        glVertex3f(-largura/2 , -(altura/2) + 0.5, comprimento/2);
+        glTexCoord2f(1,0);
+        glVertex3f(largura/2 , -(altura/2) + 0.5, comprimento/2);
+    glEnd();
+
     glEnable(GL_LIGHTING);  //turn everything back, which we turned on, and turn everything off, which we have turned on.
     // glEnable(GL_DEPTH_TEST);
 }
 
 void ilha(void){
-    bool b1 = glIsEnabled(GL_TEXTURE_2D); //new, we left the textures turned on, if it was turned on
-    glDisable(GL_LIGHTING); //turn off lighting, when making the skybox
+    bool b1 = glIsEnabled(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, tex);
-    glTranslatef(-largura/2, 0.3888, -comprimento/2);
-    renderHeightMap(tamHmap*propIlha/100, 1); 
-    glEnable(GL_LIGHTING);  //turn everything back, which we turned on, and turn everything off, which we have turned on.
+    glTranslatef(-largura/2, -1, -comprimento/2);
+    renderHeightMap(tamHmap*propIlha/100, altura*0.1); 
+    glEnable(GL_LIGHTING); 
     if(!b1)
         glDisable(GL_TEXTURE_2D);
 
@@ -304,8 +329,6 @@ void grid(){
 
     glEnd();
 }
-
-
 
 void terrestre1(float size, float h, float x, float y, float z){
     // Obtém a altura do solo na posição do teapot
@@ -378,7 +401,7 @@ void display(void)
     gluLookAt(posCameraX, posCameraY, posCameraZ, centroX, centroY, centroZ, 0, 1, 0);
 
     skybox();
-    grid();
+    //grid();
     oceano();
     ilha();
 
@@ -399,8 +422,10 @@ void display(void)
     // Atualiza a posição do teapot
     if (moveForward) {
         z += 0.1f;
+        x += 0.1f;
     } else {
         z -= 0.1f;
+        x -= 0.1f;
     }
 
     // Verifica se a nova posição ultrapassa os limites da ilha
@@ -408,6 +433,9 @@ void display(void)
         // Se ultrapassar, inverte a direção do movimento e retorna para o início da ilha
         moveForward = !moveForward;
         z = 0.0f;
+    } else if (x < 0.0f || x > largura * propIlha / 100){
+        moveForward = !moveForward;
+        x = rand() % (int)(largura * propIlha / 100);
     }
 
     // Renderiza o teapot na nova posição
@@ -416,6 +444,7 @@ void display(void)
     glRotatef(teapotRotation, 0.0f, 1.0f, 0.0f); // Adiciona uma rotação em torno do eixo y
 
     glScalef(0.2f, 0.2f, 0.2f);
+    glColor3f(1,0,0);
     glutSolidTeapot(1.0);
     glPopMatrix();
 
@@ -434,8 +463,6 @@ void reshape(int w, int h)
 
     float aspect_ratio = (float)w / (float)h;
     gluPerspective(50.0, aspect_ratio, 0.5, 1000.0);
-
-    
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
