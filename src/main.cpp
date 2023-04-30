@@ -9,7 +9,7 @@
 #include <stdlib.h>     
 #include <cstdlib> // para srand() e rand()
 #include <ctime> // para time()
-// ...
+// ....
 
 float posCameraX,posCameraY,posCameraZ,anguloCamera,anguloCameraVertical,propIlha = 80, largIlha, compIlha, lagos;
 int largura = 10, altura = 12, comprimento = 10, terrestres1, terrestres2, plantas1, plantas2;
