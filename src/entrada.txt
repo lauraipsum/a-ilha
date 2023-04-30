@@ -1,0 +1,7 @@
+cena 8 12 10
+ilha 80
+lagos 20
+terrestres_1 2
+terrestres_2 3
+plantas_1 6
+plantas_2 7

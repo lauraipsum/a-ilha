@@ -117,11 +117,13 @@ void regularKeys(unsigned char key, int x, int y)
          break;
 
         case 'a':
-            posCameraX -= 0.1; // mover a câmera para a esquerda
+            posCameraX -= 0.1 * cos(anguloCamera * M_PI / 180.0); // mover a câmera para a esquerda
+            posCameraZ -= 0.1 * sin(anguloCamera * M_PI / 180.0);
             break;
 
         case 'd':
-            posCameraX += 0.1;
+            posCameraX += 0.1 * cos(anguloCamera * M_PI / 180.0); // mover a câmera para a direita
+            posCameraZ += 0.1 * sin(anguloCamera * M_PI / 180.0);
             break;
 
     }
@@ -330,7 +332,7 @@ void grid(){
 }
 
 
-
+/*
 void terrestre1(float size, float h, float x, float y, float z){
     // Obtém a altura do solo na posição do teapot
     float height = getHeightFromMap(x, z);
@@ -386,6 +388,9 @@ void update(int value) {
     glutTimerFunc(1, update, 0);
     
 }
+*/
+float teapotRotation = 0.0f; // Rotação atual do teapot
+
 
 void genTerrestre1(){
     // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
@@ -436,6 +441,55 @@ void genTerrestre1(){
 
 }
 
+void genTerrestre2(){
+    // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
+    int i = rand() % heights.size();
+
+    // Gera um número aleatório de 0 a heights[i].size() - 1 para escolher uma coluna do heightmap
+    int j = rand() % heights[i].size();
+
+    // Obtém a altura do solo na posição aleatória (i, j)
+    float height = getHeightFromMap(i, j);
+
+    static float x = rand() % (int)(largura * propIlha / 100); // gera uma posição x aleatória dentro da ilha
+    static float z = 0.0f; // posição atual ao longo do eixo Z
+    static bool moveForward = true; // flag para controlar a direção do movimento
+    static float y = height + 0.2f; // obtém a altura do terreno na posição x,z e adiciona 0.2 para posicionar o teapot acima do solo
+
+    // Atualiza a posição do teapot
+    if (moveForward) {
+        z += 0.1f;
+        x += 0.1f;
+    } else {
+        z -= 0.1f;
+        x -= 0.1f;
+    }
+
+    // Verifica se a nova posição ultrapassa os limites da ilha
+    if (z < 0.0f || z > comprimento * propIlha / 100) {
+        // Se ultrapassar, inverte a direção do movimento e retorna para o início da ilha
+        moveForward = !moveForward;
+        z = 0.0f;
+    } else if (x < 0.0f || x > largura * propIlha / 100){
+        moveForward = !moveForward;
+        x = rand() % (int)(largura * propIlha / 100);
+    }
+
+    // Renderiza o teapot na nova posição
+    glDisable(GL_LIGHTING);
+
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glRotatef(teapotRotation, 0.0f, 1.0f, 0.0f); // Adiciona uma rotação em torno do eixo y
+
+    glScalef(0.2f, 0.2f, 0.2f);
+    glColor3f(0,0,1);
+    glutSolidTeapot(1.0);
+    glPopMatrix();
+    glEnable(GL_LIGHTING); 
+
+}
+
 void display(void)
 {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -454,6 +508,7 @@ void display(void)
     oceano();
     ilha();
     genTerrestre1();
+    genTerrestre2();
 
     //troca de buffers, o flush é implícito aqui
     glutSwapBuffers();
@@ -492,7 +547,7 @@ int main(int argc, char** argv)
     glutMotionFunc(mouseMovement);
     glutKeyboardFunc(regularKeys); // registra a função regularKeys como callback para teclas normais
     glutReshapeFunc(reshape);
-        glutTimerFunc(10, update, 0); // chama a função update a cada 10 milissegundos
+    //glutTimerFunc(10, update, 0); // chama a função update a cada 10 milissegundos
 
 
     glutMainLoop();
