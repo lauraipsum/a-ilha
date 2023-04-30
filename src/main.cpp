@@ -332,63 +332,6 @@ void grid(){
 }
 
 
-/*
-void terrestre1(float size, float h, float x, float y, float z){
-    // Obtém a altura do solo na posição do teapot
-    float height = getHeightFromMap(x, z);
-
-    // Calcula a altura final do teapot acima do solo
-    float teapotHeight = height + size / 2.0f + h;
-
-    // Renderiza o teapot na posição definida
-    glPushMatrix();
-    glTranslatef(x, teapotHeight, z);
-    
-    glScalef(size, size, size); // escala o teapot de acordo com o valor de size
-    glutSolidTeapot(1.0);
-    glPopMatrix();
-}
-float teapotRotation = 0.0f; // Rotação atual do teapot
-
-
-
-void andarTerrestre1(float speed, long elapsedTime) {
-    static bool moveForward = true; // Flag para controlar a direção do movimento
-
-    // Atualiza a posição do teapot com base no tempo decorrido
-    float distance = speed * elapsedTime / 1000.0f; // Converte o tempo para segundos e calcula a distância percorrida
-    if (moveForward) {
-        teapotZ += distance;
-    } else {
-        teapotZ -= distance;
-    }
-
-    // Verifica se a nova posição ultrapassa os limites da ilha
-    if (teapotZ < 0.0f || teapotZ > comprimento * propIlha / 100) {
-        // Se ultrapassar, inverte a direção do movimento, define uma nova rotação aleatória e retorna para o início da ilha
-        moveForward = !moveForward;
-        teapotZ = 0.0f;
-        teapotRotation = static_cast<float>(rand()) / RAND_MAX * 360.0f; // Gera uma rotação aleatória entre 0 e 360 graus
-    }
-
-    // Renderiza o teapot na nova posição
-    terrestre1(0.2f, 2.0f, teapotX, teapotY, teapotZ);
-}
-
-
-void update(int value) {
-    // Calcula o tempo decorrido desde a última atualização
-    long currentTime = glutGet(GLUT_ELAPSED_TIME);
-    long elapsedTime = currentTime - lastUpdateTime;
-    lastUpdateTime = currentTime;
-
-    // Atualiza a posição do terrestre1 com base no tempo decorrido
-    andarTerrestre1(0.1f, elapsedTime);
-    glutPostRedisplay();
-    glutTimerFunc(1, update, 0);
-    
-}
-*/
 float teapotRotation = 0.0f; // Rotação atual do teapot
 
 
@@ -490,6 +433,67 @@ void genTerrestre2(){
 
 }
 
+
+void genPlanta1(){
+    // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
+    int i = rand() % heights.size();
+
+    // Gera um número aleatório de 0 a heights[i].size() - 1 para escolher uma coluna do heightmap
+    int j = rand() % heights[i].size();
+
+    // Obtém a altura do solo na posição aleatória (i, j)
+    float height = getHeightFromMap(i, j);
+
+    static float x = rand() % (int)(largura * propIlha / 100); // gera uma posição x aleatória dentro da ilha
+    static float z = 0.0f; // posição atual ao longo do eixo Z
+    static bool moveForward = true; // flag para controlar a direção do movimento
+    static float y = height + 0.1f; // obtém a altura do terreno na posição x,z e adiciona 0.1 para posicionar o teapot acima do solo
+
+   
+    glDisable(GL_LIGHTING);
+
+    glPushMatrix();
+    glTranslatef(x, y, z);
+
+    glScalef(0.2f, 0.2f, 0.2f);
+    glColor3f(1,0,0);
+    glutSolidTeapot(1.0);
+    glPopMatrix();
+    glEnable(GL_LIGHTING); 
+
+}
+
+
+void genPlanta2(){
+    // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
+    int i = rand() % heights.size();
+
+    // Gera um número aleatório de 0 a heights[i].size() - 1 para escolher uma coluna do heightmap
+    int j = rand() % heights[i].size();
+
+    // Obtém a altura do solo na posição aleatória (i, j)
+    float height = getHeightFromMap(i, j);
+
+    static float x = rand() % (int)(largura * propIlha / 100); // gera uma posição x aleatória dentro da ilha
+    static float z = 0.0f; // posição atual ao longo do eixo Z
+    static float y = height + 0.1f; // obtém a altura do terreno na posição x,z e adiciona 0.1 para posicionar o teapot acima do solo
+
+   
+    glDisable(GL_LIGHTING);
+
+    glPushMatrix();
+    glTranslatef(x, y, z);
+
+    glScalef(0.2f, 0.2f, 0.2f);
+    glColor3f(0,0,1);
+    glutSolidTeapot(1.0);
+    glPopMatrix();
+    glEnable(GL_LIGHTING); 
+
+}
+
+
+
 void display(void)
 {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -509,6 +513,8 @@ void display(void)
     ilha();
     genTerrestre1();
     genTerrestre2();
+    genPlanta1();
+    genPlanta2();
 
     //troca de buffers, o flush é implícito aqui
     glutSwapBuffers();
