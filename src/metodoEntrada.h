@@ -35,33 +35,39 @@ class criaJogo {
             std::cout << input.at(i) << ' ';
     }
 
-    // Preenche um vetor com o valores do arquivo
-    void saida () {
-      entrada.push_back (this -> largura);
-      entrada.push_back (this -> altura);
-      entrada.push_back (this -> comprimento);
-      entrada.push_back (this -> ilha);
-      entrada.push_back (this -> lagos);
-      entrada.push_back (this -> terrestre1);
-      entrada.push_back (this -> terrestre2);
-      entrada.push_back (this -> plantas1);
-      entrada.push_back (this -> plantas2);
+    int getL(){
+      return largura;
+    }
 
-      // Imprime o vetor preenchido para confirmacao dos dados
-      // A funcao foi deixada como comentario por nao fazer parte do programa
-      // print(entrada);
+    int getA(){
+      return altura;
+    }
+
+    int getC(){
+      return comprimento;
+    }
+
+    int getI(){
+      return ilha;
+    }
+
+    int getLg(){
+      return lagos;
+    }
+
+    int getT1(){
+      return terrestre1;
+    }
+
+    int getT2(){
+      return terrestre2;
+    }
+
+    int getP1(){
+      return plantas1;
+    }
+
+    int getP2(){
+      return plantas2;
     }
 };
-
-// Executa o código conferindo se algum arquivo foi dado como entrada
-int main( int argc , char **arquivo ){
-  if( argc > 1 ){
-    criaJogo game;
-    game.readfile(arquivo[1]);
-    game.saida();
-  } else {
-    std::cerr << "Informe o arquivo.\n";
-    return 1;
-  }
-  return 0;
-}

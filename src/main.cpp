@@ -9,16 +9,17 @@
 #include <stdlib.h>     
 #include <cstdlib> // para srand() e rand()
 #include <ctime> // para time()
-// ...
+#include "metodoEntrada.h"
+
+criaJogo entrada;
 
 float posCameraX,posCameraY,posCameraZ,anguloCamera,anguloCameraVertical,propIlha = 80, largIlha, compIlha, lagos;
-int largura = 10, altura = 12, comprimento = 10, terrestres1, terrestres2, plantas1, plantas2;
-unsigned int tex, xceu, xxceu, yceu, yyceu, zceu, zzceu, mar;
+int largura, altura, comprimento, terrestre1, terrestre2, plantas1, plantas2;
+unsigned int tex, xceu, xxceu, yceu, yyceu, zceu, zzceu;
 
 
-float   diagonalTotal = sqrt(pow(largura,2)+pow(comprimento,2)),
-        diagonalHmap = 100*sqrt(2),
-        tamHmap = ((diagonalTotal*100)/diagonalHmap)/100;
+
+float   diagonalTotal, diagonalHmap, tamHmap;
 
 long lastUpdateTime = 0;
 
@@ -35,6 +36,9 @@ void init(void)
     glMatrixMode(GL_MODELVIEW);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
 
     tex = loadTexture("resources/texturas/sand-texture-hd.bmp");
     xceu = loadTexture("resources/bluecloud_lf.bmp");
@@ -51,11 +55,25 @@ void init(void)
    anguloCamera = 0;
    anguloCameraVertical = 0;
 
+    entrada.readfile("entrada.txt");
 
-    loadHeightMap("resources/Untitled.bmp");
-    glEnable(GL_DEPTH_TEST);
+    largura = entrada.getL();
+    altura = entrada.getA();
+    comprimento = entrada.getC();
+    terrestre1 = entrada.getT1();
+    terrestre2 = entrada.getT2();
+    plantas1 = entrada.getP1();
+    plantas2 = entrada.getP2();
+
+    diagonalTotal = sqrt(pow(largura,2)+pow(comprimento,2));
+    diagonalHmap = 100*sqrt(2);
+    tamHmap = ((diagonalTotal*100)/diagonalHmap)/100;
+
+    loadHeightMap("resources/heightmap.bmp");
 
 }
+
+
 
 void specialKeys(int key, int x, int y)
 {
@@ -215,11 +233,9 @@ void skybox(void){
 }
 
 void oceano(void){
-    glDisable(GL_LIGHTING); //turn off lighting, when making the skybox
-    //glDisable(GL_DEPTH_TEST);   //turn off depth texting
-    glDepthMask(GL_FALSE);
+    glDisable(GL_LIGHTING);
 
-    glColor4f(0.3, 0.3, 1, 1);
+    glColor4f(0, 0, 1, 0.4);
     glBindTexture(GL_TEXTURE_2D, tex);
     glBegin(GL_QUADS);
         glTexCoord2f(1,1);        
@@ -231,10 +247,7 @@ void oceano(void){
         glTexCoord2f(1,0);        
         glVertex3f(largura/2 , 0, comprimento/2);
     glEnd();
-    glDepthMask(GL_TRUE);
 
-
-    glColor4f(0, 0, 0.7, 1);
     glBegin(GL_QUADS); //
         glVertex3f(largura/2 , 0, comprimento/2);
         glVertex3f(-largura/2 , 0, comprimento/2);
@@ -264,7 +277,7 @@ void oceano(void){
     glEnd();
 
     glBindTexture(GL_TEXTURE_2D, tex);
-    glColor4f(0, 0, 0.7, 1);
+    glColor4f(0, 0, 0.4, 1);
     glBegin(GL_QUADS);
         glTexCoord2f(1,1);        
         glVertex3f(largura/2 , -(altura/2) + 0.5, -comprimento/2);
@@ -276,8 +289,7 @@ void oceano(void){
         glVertex3f(largura/2 , -(altura/2) + 0.5, comprimento/2);
     glEnd();
 
-    glEnable(GL_LIGHTING);  //turn everything back, which we turned on, and turn everything off, which we have turned on.
-    // glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
 }
 
 void ilha(void){
@@ -285,7 +297,7 @@ void ilha(void){
     glDisable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, tex);
-    glTranslatef(-largura/2, -1, -comprimento/2);
+    glTranslatef((-largura/2)+0.5, -0.5, (-comprimento/2)+0.5);
     renderHeightMap(tamHmap*propIlha/100, altura*0.1); 
     glEnable(GL_LIGHTING); 
     if(!b1)
@@ -336,6 +348,7 @@ float teapotRotation = 0.0f; // Rotação atual do teapot
 
 
 void genTerrestre1(){
+
     // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
     int i = rand() % heights.size();
 
@@ -345,20 +358,26 @@ void genTerrestre1(){
     // Obtém a altura do solo na posição aleatória (i, j)
     float height = getHeightFromMap(i, j);
 
-    static float x = rand() % (int)(largura * propIlha / 100); // gera uma posição x aleatória dentro da ilha
+    float x = rand() % (int)(largura * propIlha / 100); // gera uma posição x aleatória dentro da ilha
     static float z = 0.0f; // posição atual ao longo do eixo Z
     static bool moveForward = true; // flag para controlar a direção do movimento
     static float y = height + 0.2f; // obtém a altura do terreno na posição x,z e adiciona 0.2 para posicionar o teapot acima do solo
 
     // Atualiza a posição do teapot
-    if (moveForward) {
-        z += 0.1f;
-        x += 0.1f;
+    if (getHeightFromMap(i, j) != -1){
+        if (moveForward) {
+            z += 0.1f;
+            x += 0.1f;
+            y = height + 0.2f;
+        } else {
+            z -= 0.1f;
+            x -= 0.1f;
+            y = height + 0.2f;
+        }
     } else {
-        z -= 0.1f;
-        x -= 0.1f;
+        moveForward = !moveForward;
+        x = rand() % (int)(largura * propIlha / 100);
     }
-
     // Verifica se a nova posição ultrapassa os limites da ilha
     if (z < 0.0f || z > comprimento * propIlha / 100) {
         // Se ultrapassar, inverte a direção do movimento e retorna para o início da ilha
@@ -370,6 +389,7 @@ void genTerrestre1(){
     }
 
     // Renderiza o teapot na nova posição
+    glDisable(GL_TEXTURE_2D);
     glDisable(GL_LIGHTING);
 
     glPushMatrix();
@@ -381,6 +401,7 @@ void genTerrestre1(){
     glutSolidTeapot(1.0);
     glPopMatrix();
     glEnable(GL_LIGHTING); 
+    glEnable(GL_TEXTURE_2D);
 
 }
 
@@ -394,18 +415,25 @@ void genTerrestre2(){
     // Obtém a altura do solo na posição aleatória (i, j)
     float height = getHeightFromMap(i, j);
 
-    static float x = rand() % (int)(largura * propIlha / 100); // gera uma posição x aleatória dentro da ilha
+    float x = rand() % (int)(largura * propIlha / 100); // gera uma posição x aleatória dentro da ilha
     static float z = 0.0f; // posição atual ao longo do eixo Z
     static bool moveForward = true; // flag para controlar a direção do movimento
     static float y = height + 0.2f; // obtém a altura do terreno na posição x,z e adiciona 0.2 para posicionar o teapot acima do solo
 
     // Atualiza a posição do teapot
-    if (moveForward) {
-        z += 0.1f;
-        x += 0.1f;
+    if (getHeightFromMap(i, j) != -1){
+        if (moveForward) {
+            z += 0.1f;
+            x += 0.1f;
+            y = height + 0.2f;
+        } else {
+            z -= 0.1f;
+            x -= 0.1f;
+            y = height + 0.2f;
+        }
     } else {
-        z -= 0.1f;
-        x -= 0.1f;
+        moveForward = !moveForward;
+        x = rand() % (int)(largura * propIlha / 100);
     }
 
     // Verifica se a nova posição ultrapassa os limites da ilha
@@ -419,6 +447,7 @@ void genTerrestre2(){
     }
 
     // Renderiza o teapot na nova posição
+    glDisable(GL_TEXTURE_2D);
     glDisable(GL_LIGHTING);
 
     glPushMatrix();
@@ -429,12 +458,13 @@ void genTerrestre2(){
     glColor3f(0,0,1);
     glutSolidTeapot(1.0);
     glPopMatrix();
+    glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING); 
 
 }
 
 
-void genPlanta1(){
+void genPlanta1(int dif){
     // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
     int i = rand() % heights.size();
 
@@ -450,21 +480,23 @@ void genPlanta1(){
     static float y = height + 0.1f; // obtém a altura do terreno na posição x,z e adiciona 0.1 para posicionar o teapot acima do solo
 
    
+    glDisable(GL_TEXTURE_2D);
     glDisable(GL_LIGHTING);
 
     glPushMatrix();
-    glTranslatef(x, y, z);
+    glTranslatef(x, y, z+dif);
 
     glScalef(0.2f, 0.2f, 0.2f);
-    glColor3f(1,0,0);
+    glColor3f(0.5,1,0.5);
     glutSolidTeapot(1.0);
     glPopMatrix();
+    glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING); 
 
 }
 
 
-void genPlanta2(){
+void genPlanta2(int dif){
     // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
     int i = rand() % heights.size();
 
@@ -479,23 +511,43 @@ void genPlanta2(){
     static float y = height + 0.1f; // obtém a altura do terreno na posição x,z e adiciona 0.1 para posicionar o teapot acima do solo
 
    
+    glDisable(GL_TEXTURE_2D);
     glDisable(GL_LIGHTING);
 
     glPushMatrix();
-    glTranslatef(x, y, z);
+    glTranslatef(x, y, z+dif);
 
     glScalef(0.2f, 0.2f, 0.2f);
-    glColor3f(0,0,1);
+    glColor3f(0,1,0);
     glutSolidTeapot(1.0);
     glPopMatrix();
+    glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING); 
 
 }
 
+void Terrestres(){
+    int i;
+    for (i = 0; i < terrestre1; i++){
+        genTerrestre1();
+    }
+    for (i = 0; i < terrestre2; i++){
+        genTerrestre2();
+    }
+}
+
+void Plantas(){
+    int i;
+    for (i = 0; i < plantas1; i++){
+        genPlanta1(i);
+    }
+    for (i = 0; i < plantas2; i++){
+        genPlanta2(i);
+    }
+}
 
 
-void display(void)
-{
+void display(){
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDepthFunc(GL_ALWAYS);
 
@@ -511,13 +563,12 @@ void display(void)
     //grid();
     oceano();
     ilha();
-    genTerrestre1();
-    genTerrestre2();
-    genPlanta1();
-    genPlanta2();
+    Terrestres();
+    Plantas();
 
     //troca de buffers, o flush é implícito aqui
     glutSwapBuffers();
+    
 }
 
 
@@ -553,7 +604,6 @@ int main(int argc, char** argv)
     glutMotionFunc(mouseMovement);
     glutKeyboardFunc(regularKeys); // registra a função regularKeys como callback para teclas normais
     glutReshapeFunc(reshape);
-    //glutTimerFunc(10, update, 0); // chama a função update a cada 10 milissegundos
 
 
     glutMainLoop();
