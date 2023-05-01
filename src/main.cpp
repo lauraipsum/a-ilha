@@ -17,8 +17,6 @@ float posCameraX,posCameraY,posCameraZ,anguloCamera,anguloCameraVertical,propIlh
 int largura, altura, comprimento, terrestre1, terrestre2, plantas1, plantas2;
 unsigned int tex, xceu, xxceu, yceu, yyceu, zceu, zzceu;
 
-
-
 float   diagonalTotal, diagonalHmap, tamHmap;
 
 long lastUpdateTime = 0;
@@ -39,7 +37,7 @@ void init(void)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
-
+    //carregamento de textura
     tex = loadTexture("resources/texturas/sand-texture-hd.bmp");
     xceu = loadTexture("resources/bluecloud_lf.bmp");
     xxceu = loadTexture("resources/bluecloud_rt.bmp");
@@ -55,6 +53,7 @@ void init(void)
    anguloCamera = 0;
    anguloCameraVertical = 0;
 
+    //lê arquivo de entrada e atribui as informações lidas
     entrada.readfile("entrada.txt");
 
     largura = entrada.getL();
@@ -148,15 +147,16 @@ void regularKeys(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
+//gera um paralelepipedo com textura de céu, formando uma skybox e limitando a cena
 void skybox(void){
     
-    bool b1 = glIsEnabled(GL_TEXTURE_2D); //new, we left the textures turned on, if it was turned on
-    glDisable(GL_LIGHTING); //turn off lighting, when making the skybox
+    bool b1 = glIsEnabled(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
 
     glColor4f(1, 1, 1, 1);
     glBindTexture(GL_TEXTURE_2D, yyceu);
-    glBegin(GL_QUADS); //top
+    glBegin(GL_QUADS);
         glTexCoord2f(1,1); 
         glVertex3f(largura/2 , altura/2, -comprimento/2);
         glTexCoord2f(1,0);
@@ -168,7 +168,7 @@ void skybox(void){
     glEnd();
 
     glBindTexture(GL_TEXTURE_2D, yceu);
-    glBegin(GL_QUADS); //down
+    glBegin(GL_QUADS);
         glTexCoord2f(1,1);
         glVertex3f(largura/2 , -altura/2, comprimento/2);
         glTexCoord2f(0,1);
@@ -180,7 +180,7 @@ void skybox(void){
     glEnd();
     
     glBindTexture(GL_TEXTURE_2D, zceu);
-    glBegin(GL_QUADS); //
+    glBegin(GL_QUADS);
         glTexCoord2f(1,1);
         glVertex3f(largura/2 , altura/2, comprimento/2);
         glTexCoord2f(0,1);
@@ -226,12 +226,12 @@ void skybox(void){
         glTexCoord2f(1,0);
         glVertex3f(largura/2 , -altura/2, -comprimento/2);
     glEnd();
-    glEnable(GL_LIGHTING);  //turn everything back, which we turned on, and turn everything off, which we have turned on.
-    //glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
     if(!b1)
         glDisable(GL_TEXTURE_2D);
 }
 
+//gera um paralelepípedo com textura e transparência, simulando o oceano
 void oceano(void){
     glDisable(GL_LIGHTING);
 
@@ -292,6 +292,7 @@ void oceano(void){
     glEnable(GL_LIGHTING);
 }
 
+//renderiza a ilha a partir de um heightmap e a desloca da borda da cena
 void ilha(void){
     bool b1 = glIsEnabled(GL_TEXTURE_2D);
     glDisable(GL_LIGHTING);
@@ -305,6 +306,7 @@ void ilha(void){
 
 }
 
+//gera a grid usada como base para a renderização do projeto
 void grid(){
 
    glBegin(GL_LINES);
@@ -463,7 +465,7 @@ void genTerrestre2(){
 
 }
 
-
+// recebe um inteiro diferenciador de posição
 void genPlanta1(int dif){
     // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
     int i = rand() % heights.size();
@@ -495,7 +497,7 @@ void genPlanta1(int dif){
 
 }
 
-
+// recebe um inteiro diferenciador de posição
 void genPlanta2(int dif){
     // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
     int i = rand() % heights.size();
@@ -526,6 +528,7 @@ void genPlanta2(int dif){
 
 }
 
+//função geradora dos terrestres conforme entrada
 void Terrestres(){
     int i;
     for (i = 0; i < terrestre1; i++){
@@ -536,6 +539,7 @@ void Terrestres(){
     }
 }
 
+//função geradora das plantas conforme entrada
 void Plantas(){
     int i;
     for (i = 0; i < plantas1; i++){
@@ -557,10 +561,9 @@ void display(){
     float centroX = posCameraX + sin(anguloCamera * M_PI / 180.0);
     float centroY = posCameraY + sin(anguloCameraVertical * M_PI / 180.0);
     float centroZ = posCameraZ - cos(anguloCamera * M_PI / 180.0);
-    gluLookAt(posCameraX, posCameraY, posCameraZ, centroX, centroY, centroZ, 0, 1, 0);
+    gluLookAt(posCameraX, posCameraY, posCameraZ, centroX, centroY, centroZ, 0, 1, 0); //seta a posição inicial da câmera
 
     skybox();
-    //grid();
     oceano();
     ilha();
     Terrestres();
@@ -604,7 +607,6 @@ int main(int argc, char** argv)
     glutMotionFunc(mouseMovement);
     glutKeyboardFunc(regularKeys); // registra a função regularKeys como callback para teclas normais
     glutReshapeFunc(reshape);
-
 
     glutMainLoop();
     
