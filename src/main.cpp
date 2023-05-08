@@ -13,7 +13,7 @@
 #include "loader.h"
 
 criaJogo entrada;
-GLuint model;
+GLuint model1,model2,model3,model4;
 float posCameraX,posCameraY,posCameraZ,anguloCamera,anguloCameraVertical,propIlha = 80, largIlha, compIlha, lagos;
 int largura, altura, comprimento, terrestre1, terrestre2, plantas1, plantas2;
 unsigned int tex, xceu, xxceu, yceu, yyceu, zceu, zzceu;
@@ -72,7 +72,10 @@ void init(void)
     tamHmap = ((diagonalTotal*100)/diagonalHmap)/100;
 
     loadHeightMap("resources/heightmap.bmp");
-    model = loadObj("modelos/capybara.obj");
+    model1 = loadObj("modelos/capybara.obj");
+    model2 = loadObj("modelos/Tree1.obj");
+    model3 = loadObj("modelos/Tree.obj");
+    model4 = loadObj("modelos/cat.obj");
 
 }
 
@@ -350,9 +353,7 @@ void grid(){
 }
 
 
-float teapotRotation = 0.0f; // Rotação atual do teapot
-
-
+/*
 void genTerrestre1(){
 
     // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
@@ -400,17 +401,67 @@ void genTerrestre1(){
 
     glPushMatrix();
     glTranslatef(x, y, z);
-    glRotatef(teapotRotation, 0.0f, 1.0f, 0.0f); // Adiciona uma rotação em torno do eixo y
+    glRotatef(180.0f, 90.0f, 300.0f, 200.0f);
 
-    glScalef(0.2f, 0.2f, 0.2f);
+    glScalef(0.09f, 0.09f, 0.09f);
     glColor3f(1,0,0);
-    glutSolidTeapot(1.0);
+    glCallList(model1);
     glPopMatrix();
     glEnable(GL_LIGHTING); 
     glEnable(GL_TEXTURE_2D);
 
+}*/
+
+void genTerrestre1(){
+    // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
+    int i = rand() % heights.size();
+
+    // Gera um número aleatório de 0 a heights[i].size() - 1 para escolher uma coluna do heightmap
+    int j = rand() % heights[i].size();
+
+    // Obtém a altura do solo na posição aleatória (i, j)
+    float height = getHeightFromMap(i, j);
+
+    static float x = rand() % (int)(largura * propIlha / 100); // gera uma posição x aleatória dentro da ilha
+    static float z = 0.0f; // posição atual ao longo do eixo Z
+    static bool moveForward = true; // flag para controlar a direção do movimento
+    static float y = height + 0.2f; // obtém a altura do terreno na posição x,z e adiciona 0.2 para posicionar o teapot acima do solo
+
+    // Atualiza a posição do teapot
+    if (moveForward) {
+        z += 0.1f;
+        x += 0.1f;
+    } else {
+        z -= 0.1f;
+        x -= 0.1f;
+    }
+
+    // Verifica se a nova posição ultrapassa os limites da ilha
+    if (z < 0.0f || z > comprimento * propIlha / 100) {
+        // Se ultrapassar, inverte a direção do movimento e retorna para o início da ilha
+        moveForward = !moveForward;
+        z = 0.0f;
+    } else if (x < 0.0f || x > largura * propIlha / 100){
+        moveForward = !moveForward;
+        x = rand() % (int)(largura * propIlha / 100);
+    }
+
+    // Renderiza o teapot na nova posição
+    glDisable(GL_LIGHTING);
+
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glRotatef(180.0f, 90.0f, 300.0f, 200.0f);
+
+    glScalef(0.09f, 0.09f, 0.09f);
+    glColor3f(1,0,0);
+    glCallList(model1);
+    glPopMatrix();
+    glEnable(GL_LIGHTING); 
+
 }
 
+/*
 void genTerrestre2(){
     // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
     int i = rand() % heights.size();
@@ -458,13 +509,64 @@ void genTerrestre2(){
 
     glPushMatrix();
     glTranslatef(x, y, z);
-    glRotatef(teapotRotation, 0.0f, 1.0f, 0.0f); // Adiciona uma rotação em torno do eixo y
-
-    glScalef(0.2f, 0.2f, 0.2f);
+    glRotatef(180.0f, 90.0f, 300.0f, 200.0f);
+    
+    glScalef(0.02f, 0.02f, 0.02f);
     glColor3f(0,0,1);
-    glutSolidTeapot(1.0);
+    glCallList(model4);
     glPopMatrix();
     glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING); 
+
+} */
+
+
+void genTerrestre2(){
+    // Gera um número aleatório de 0 a heights.size() - 1 para escolher uma linha do heightmap
+    int i = rand() % heights.size();
+
+    // Gera um número aleatório de 0 a heights[i].size() - 1 para escolher uma coluna do heightmap
+    int j = rand() % heights[i].size();
+
+    // Obtém a altura do solo na posição aleatória (i, j)
+    float height = getHeightFromMap(i, j);
+
+    static float x = rand() % (int)(largura * propIlha / 100); // gera uma posição x aleatória dentro da ilha
+    static float z = 0.0f; // posição atual ao longo do eixo Z
+    static bool moveForward = true; // flag para controlar a direção do movimento
+    static float y = height + 0.2f; // obtém a altura do terreno na posição x,z e adiciona 0.2 para posicionar o teapot acima do solo
+
+    // Atualiza a posição do teapot
+    if (moveForward) {
+        z += 0.1f;
+        x += 0.1f;
+    } else {
+        z -= 0.1f;
+        x -= 0.1f;
+    }
+
+    // Verifica se a nova posição ultrapassa os limites da ilha
+    if (z < 0.0f || z > comprimento * propIlha / 100) {
+        // Se ultrapassar, inverte a direção do movimento e retorna para o início da ilha
+        moveForward = !moveForward;
+        z = 0.0f;
+    } else if (x < 0.0f || x > largura * propIlha / 100){
+        moveForward = !moveForward;
+        x = rand() % (int)(largura * propIlha / 100);
+    }
+
+    // Renderiza o teapot na nova posição
+    glDisable(GL_LIGHTING);
+
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glRotatef(180.0f, 90.0f, 300.0f, 200.0f);
+    
+    glScalef(0.02f, 0.02f, 0.02f);
+    glColor3f(0,0,1);
+    glCallList(model4);
+    glutSolidTeapot(1.0);
+    glPopMatrix();
     glEnable(GL_LIGHTING); 
 
 }
@@ -494,7 +596,7 @@ void genPlanta1(int dif){
 
     glScalef(0.2f, 0.2f, 0.2f);
     glColor3f(0.5,1,0.5);
-    glutSolidTeapot(1.0);
+    glCallList(model2);
     glPopMatrix();
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING); 
@@ -525,7 +627,7 @@ void genPlanta2(int dif){
 
     glScalef(0.2f, 0.2f, 0.2f);
     glColor3f(0,1,0);
-    glutSolidTeapot(1.0);
+    glCallList(model3);
     glPopMatrix();
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING); 
@@ -574,7 +676,8 @@ void display(){
     Plantas();
     glRotatef(45.0, 0.0, 1.0, 0.0);
     glScalef(0.3, 0.3, 0.3);
-    glCallList(model);
+    
+    
 
     //troca de buffers, o flush é implícito aqui
     glutSwapBuffers();
