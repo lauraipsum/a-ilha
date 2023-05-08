@@ -10,9 +10,10 @@
 #include <cstdlib> // para srand() e rand()
 #include <ctime> // para time()
 #include "metodoEntrada.h"
+#include "loader.h"
 
 criaJogo entrada;
-
+GLuint model;
 float posCameraX,posCameraY,posCameraZ,anguloCamera,anguloCameraVertical,propIlha = 80, largIlha, compIlha, lagos;
 int largura, altura, comprimento, terrestre1, terrestre2, plantas1, plantas2;
 unsigned int tex, xceu, xxceu, yceu, yyceu, zceu, zzceu;
@@ -25,6 +26,8 @@ long lastUpdateTime = 0;
 float teapotX = 0.0f;
 float teapotY = 0.0f;
 float teapotZ = 0.0f;
+
+
 
 void init(void) 
 {
@@ -69,6 +72,7 @@ void init(void)
     tamHmap = ((diagonalTotal*100)/diagonalHmap)/100;
 
     loadHeightMap("resources/heightmap.bmp");
+    model = loadObj("modelos/capybara.obj");
 
 }
 
@@ -568,6 +572,9 @@ void display(){
     ilha();
     Terrestres();
     Plantas();
+    glRotatef(45.0, 0.0, 1.0, 0.0);
+    glScalef(0.3, 0.3, 0.3);
+    glCallList(model);
 
     //troca de buffers, o flush é implícito aqui
     glutSwapBuffers();
